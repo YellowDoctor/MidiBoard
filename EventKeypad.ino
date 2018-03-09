@@ -1,12 +1,3 @@
-/* @file EventSerialKeypad.pde
-  || @version 1.0
-  || @author Alexander Brevig
-  || @contact alexanderbrevig@gmail.com
-  ||
-  || @description
-  || | Demonstrates using the KeypadEvent.
-  || #
-*/
 #include <Keypad.h>
 #include <MIDI.h>
 struct HairlessMidiSettings : public midi::DefaultSettings
@@ -15,8 +6,8 @@ struct HairlessMidiSettings : public midi::DefaultSettings
   static const long BaudRate = 115200;
 };
 volatile int NoteNumber;
-const byte ROWS = 4; //four rows
-const byte COLS = 3; //three columns
+const byte ROWS = 4;
+const byte COLS = 3;
 char keys[ROWS][COLS] = {
   {'1', '2', '3'},
   {'4', '5', '6'},
@@ -28,23 +19,18 @@ byte rowPins[ROWS] = {9, 8, 7, 6};
 byte colPins[COLS] = {5, 4, 3};
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, HairlessMidiSettings);
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
-
+volatile unsigned int Chanel = 1; 
+volatile bool SB = 0;
 
 
 void setup() {
   Serial.begin(115200);
-  keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
+  keypad.addEventListener(keypadEvent);
 }
 
 void loop() {
 char key = keypad.getKey();
-
-//  if (key) {
-//    Serial.println(key);
-//  }
 }
-
-// Taking care of some special events.
 void keypadEvent(KeypadEvent key) {
   switch (key) {
     case '1':
@@ -75,28 +61,29 @@ void keypadEvent(KeypadEvent key) {
       NoteNumber = 8;
       break;
     case '*':
-      NoteNumber = 9;
+      Chanel++;
+      SB = 1;
       break;
     case '0':
       NoteNumber = 10;
       break;
     case '#':
-      NoteNumber = 11;
+      Chanel--;
+      SB = 1;
       break;
   }
+  if (SB){
+SB = 0;
+  }
+  else{
   switch (keypad.getState()) {
     case PRESSED:
-      MIDI.sendNoteOn(Notes[NoteNumber], 127, 1);
+      MIDI.sendNoteOn(Notes[NoteNumber], 127, Chanel);
       break;
 
     case RELEASED:
-      MIDI.sendNoteOff(Notes[NoteNumber], 127, 1);
+      MIDI.sendNoteOff(Notes[NoteNumber], 127, Chanel);
       break;
-
-      //    case HOLD:
-      //      if (key == '*') {
-      //        blink = true;    // Blink the LED when holding the * key.
-      //      }
-      //      break;
+  }
   }
 }
