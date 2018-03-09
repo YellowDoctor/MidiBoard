@@ -14,7 +14,7 @@ char keys[ROWS][COLS] = {
   {'7', '8', '9'},
   {'*', '0', '#'}
 };
-volatile int Notes[] = {72,74,76,77,79,81,83,84,86,88,89,91};
+volatile int Notes[] = {72,74,76,77,79,81,83,84,86,};
 byte rowPins[ROWS] = {9, 8, 7, 6};
 byte colPins[COLS] = {5, 4, 3};
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, HairlessMidiSettings);
@@ -65,7 +65,8 @@ void keypadEvent(KeypadEvent key) {
       SB = 1;
       break;
     case '0':
-      NoteNumber = 10;
+      SB = 1;
+      Chanel = 1
       break;
     case '#':
       Chanel--;
