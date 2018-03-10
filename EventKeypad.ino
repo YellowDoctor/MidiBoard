@@ -21,11 +21,14 @@ MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, HairlessMidiSettings);
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 volatile unsigned int Channel = 1; 
 volatile bool SB = 0;
-
+volatile int LedPin[] = {}//LedPin
 
 void setup() {
   Serial.begin(115200);
   keypad.addEventListener(keypadEvent);
+  for (i=0;i != count(LedPin);i++){
+    pinMode(LedPin[i], OUTPUT);
+  }
 }
 
 void loop() {
